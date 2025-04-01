@@ -1,1 +1,1 @@
-SIFT: Semantically Inferring Fact from Tale
+## SIFT: Semantically dIscerning Fact from Tale
