@@ -25,11 +25,8 @@ def split(dataset, train_out, test_out, split, seed):
         X, y, test_size=split, stratify=y, random_state=seed
     )
 
-    # train = pd.concat([X_train, y_train], axis=0)
-    # test = pd.concat([X_test, y_test], axis=0)
-    
-    train = pd.DataFrame({"id": X_train['id'], "text": X_train['text'], "label": y_train})
-    test = pd.DataFrame({"id": X_test['id'], "text": X_test['text'], "label": y_test})
+    train = pd.concat([X_train, y_train], axis=1)
+    test = pd.concat([X_test, y_test], axis=1)
 
     # save train and test data
     os.makedirs(os.path.join("data", "prepared"), exist_ok=True)

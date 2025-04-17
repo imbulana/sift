@@ -12,6 +12,9 @@ artifacts:
       - classification
       - news
 stages:
+
+  # sources not redacted
+
   # clean:
   #   cmd: python src/prepare/clean.py data/raw
   #   deps:
@@ -19,28 +22,46 @@ stages:
   #     - src/prepare/clean.py
   #   outs:
   #     - data/cleaned
-  # redact:
-  #   cmd: python src/prepare/redact.py data/cleaned
+  # collate:
+  #   cmd: python src/prepare/collate.py data/cleaned
   #   deps:
   #     - data/cleaned
-  #     - src/prepare/redact.py
-  #   outs:
-  #     - data/redacted
-  # collate:
-  #   cmd: python src/prepare/collate.py data/redacted
-  #   deps:
-  #     - data/redacted
   #     - src/prepare/collate.py
   #   params:
   #     - prepare.seed
   #   outs:
   #     - data/collated/data.csv
-  split:
-    # cmd: python src/prepare/split.py data/collated/data.csv
-    cmd: python src/prepare/split.py data/data.csv
+
+  # sources redacted
+
+  clean:
+    cmd: python src/prepare/clean.py data/raw
     deps:
-      # - data/collated/data.csv
-      - data/data.csv
+      - data/raw
+      - src/prepare/clean.py
+    outs:
+      - data/cleaned
+  redact:
+    cmd: python src/prepare/redact.py data/cleaned
+    deps:
+      - data/cleaned
+      - src/prepare/redact.py
+    outs:
+      - data/redacted
+  collate:
+    cmd: python src/prepare/collate.py data/redacted
+    deps:
+      - data/redacted
+      - src/prepare/collate.py
+    params:
+      - prepare.seed
+    outs:
+      - data/collated/data.csv
+
+  split:
+    cmd: python src/prepare/split.py data/collated/data.csv
+    deps:
+      - data/collated/data.csv
       - src/prepare/split.py
     params:
       - prepare.seed

@@ -28,7 +28,7 @@ stages:
       nfiles: 2
     - path: src/prepare/collate.py
       hash: md5
-      md5: 196f211d4aa609e4623bfbaa78048d6d
+      md5: 075f9c5c4e5e0a24a7baece2c1dffe62
       size: 1328
     params:
       params.yaml:
@@ -36,19 +36,19 @@ stages:
     outs:
     - path: data/collated/data.csv
       hash: md5
-      md5: 6c011536ae995e2558840b7064599104
+      md5: a8ee15642e77d9eb17c55b58cf0d9dbc
       size: 92520291
   split:
-    cmd: python src/prepare/split.py data/data.csv
+    cmd: python src/prepare/split.py data/collated/data.csv
     deps:
-    - path: data/data.csv
+    - path: data/collated/data.csv
       hash: md5
       md5: a8ee15642e77d9eb17c55b58cf0d9dbc
       size: 92520291
     - path: src/prepare/split.py
       hash: md5
-      md5: 7b17f69ba203ff9290e23cccba4330dd
-      size: 1794
+      md5: a543b0bfb12d98b8b92faf6c01b3102f
+      size: 1607
     params:
       params.yaml:
         prepare.seed: 42
@@ -73,21 +73,21 @@ stages:
       size: 4065
     params:
       params.yaml:
-        featurize.max_features: 200
+        featurize.max_features: 10
         featurize.ngrams: 2
     outs:
     - path: data/features
       hash: md5
-      md5: c0fde86f821aa3994f8699dc6dd1923b.dir
-      size: 15293681
+      md5: 145b99ce99000a8fc8be0e08c3517578.dir
+      size: 2882605
       nfiles: 2
   train:
     cmd: python src/train.py data/features model.pkl
     deps:
     - path: data/features
       hash: md5
-      md5: c0fde86f821aa3994f8699dc6dd1923b.dir
-      size: 15293681
+      md5: 145b99ce99000a8fc8be0e08c3517578.dir
+      size: 2882605
       nfiles: 2
     - path: src/train.py
       hash: md5
@@ -101,20 +101,20 @@ stages:
     outs:
     - path: model.pkl
       hash: md5
-      md5: cb60759246d8999b8d457ba56607d5d6
-      size: 2278913
+      md5: 8a6cd2f4570d1170fbdb4883b82e92dc
+      size: 1322189
   evaluate:
     cmd: python src/evaluate.py model.pkl data/features
     deps:
     - path: data/features
       hash: md5
-      md5: c0fde86f821aa3994f8699dc6dd1923b.dir
-      size: 15293681
+      md5: 145b99ce99000a8fc8be0e08c3517578.dir
+      size: 2882605
       nfiles: 2
     - path: model.pkl
       hash: md5
-      md5: cb60759246d8999b8d457ba56607d5d6
-      size: 2278913
+      md5: 8a6cd2f4570d1170fbdb4883b82e92dc
+      size: 1322189
     - path: src/evaluate.py
       hash: md5
       md5: a1a59f55636170fb56e0c6afd3e28fa4
@@ -122,8 +122,8 @@ stages:
     outs:
     - path: eval
       hash: md5
-      md5: 1332ef2ad9a41a6d73681be5ea93c15b.dir
-      size: 6196803
+      md5: cbbbc5e755b9bc6ac69c65213c4e4a51.dir
+      size: 6116699
       nfiles: 8
   redact:
     cmd: python src/prepare/redact.py data/cleaned
