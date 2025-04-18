@@ -3,9 +3,12 @@ on: pull_request
 jobs:
   run:
     runs-on: [ubuntu-latest]
-    container: docker://dvcorg/cml-py3:latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: iterative/setup-cml@v2
+      - uses: iterative/setup-dvc@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       # Needed for https://github.com/iterative/example-repos-dev/issues/225
       - name: Installs JSON5
         run: npm install -g json5
@@ -21,7 +24,6 @@ jobs:
             git fetch origin main:main
           fi
 
-          # dvc pull eval
           dvc repro
           dvc plots diff $PREVIOUS_REF workspace \
             --show-vega --targets ROC | json5 > vega.json
