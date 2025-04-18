@@ -24,7 +24,7 @@ jobs:
             git fetch origin main:main
           fi
 
-          dvc repro
+          dvc pull eval
           dvc plots diff $PREVIOUS_REF workspace \
             --show-vega --targets ROC | json5 > vega.json
           vl2svg vega.json roc.svg
