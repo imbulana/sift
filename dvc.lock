@@ -122,8 +122,8 @@ stages:
     outs:
     - path: eval
       hash: md5
-      md5: 45387a49b0ada53db7bedbf46ea8660d.dir
-      size: 6196805
+      md5: eff4c09a741acd854ba1b92431c20622.dir
+      size: 6116745
       nfiles: 8
   redact:
     cmd: python src/prepare/redact.py data/cleaned
