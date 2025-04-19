@@ -16,14 +16,14 @@ stages:
   # sources not redacted
 
   # clean:
-  #   cmd: python src/prepare/clean.py data/raw
+  #   cmd: python3 src/prepare/clean.py data/raw
   #   deps:
   #     - data/raw
   #     - src/prepare/clean.py
   #   outs:
   #     - data/cleaned
   # collate:
-  #   cmd: python src/prepare/collate.py data/cleaned
+  #   cmd: python3 src/prepare/collate.py data/cleaned
   #   deps:
   #     - data/cleaned
   #     - src/prepare/collate.py
@@ -35,21 +35,21 @@ stages:
   # sources redacted
 
   clean:
-    cmd: python src/prepare/clean.py data/raw
+    cmd: python3 src/prepare/clean.py data/raw
     deps:
       - data/raw
       - src/prepare/clean.py
     outs:
       - data/cleaned
   redact:
-    cmd: python src/prepare/redact.py data/cleaned
+    cmd: python3 src/prepare/redact.py data/cleaned
     deps:
       - data/cleaned
       - src/prepare/redact.py
     outs:
       - data/redacted
   collate:
-    cmd: python src/prepare/collate.py data/redacted
+    cmd: python3 src/prepare/collate.py data/redacted
     deps:
       - data/redacted
       - src/prepare/collate.py
@@ -59,7 +59,7 @@ stages:
       - data/collated/data.csv
 
   split:
-    cmd: python src/prepare/split.py data/collated/data.csv
+    cmd: python3 src/prepare/split.py data/collated/data.csv
     deps:
       - data/collated/data.csv
       - src/prepare/split.py
@@ -69,7 +69,7 @@ stages:
     outs:
       - data/prepared
   featurize:
-    cmd: python src/featurize.py data/prepared data/features
+    cmd: python3 src/featurize.py data/prepared data/features
     deps:
       - data/prepared
       - src/featurize.py
@@ -79,7 +79,7 @@ stages:
     outs:
       - data/features
   train:
-    cmd: python src/train.py data/features model.pkl
+    cmd: python3 src/train.py data/features model.pkl
     deps:
       - data/features
       - src/train.py
@@ -90,7 +90,7 @@ stages:
     outs:
       - model.pkl
   evaluate:
-    cmd: python src/evaluate.py model.pkl data/features
+    cmd: python3 src/evaluate.py model.pkl data/features
     deps:
       - data/features
       - model.pkl
