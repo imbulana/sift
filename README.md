@@ -20,6 +20,18 @@ python3 -m pip install -r requirements.txt
 
 ## Dataset
 
+Download the dataset. See [here](data/README.md) for more information about the dataset.
+
+```bash
+cd data/raw
+curl -L -o data.zip \
+    https://www.kaggle.com/api/v1/datasets/download/clmentbisaillon/fake-and-real-news-dataset
+
+unzip data.zip && rm data.zip
+mv True.csv real.csv && mv Fake.csv fake.csv
+cd ../..
+```
+
 The dataset, intermediate steps, and experiment results are tracked in a DVC remote storage on Google Drive.
 
 To set up your own remote storage follow the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
