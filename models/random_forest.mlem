@@ -1,7 +1,7 @@
 artifacts:
   model/data:
-    hash: 947b9a3b1711f06a1f4768f9d0f43992
-    size: 259732
+    hash: 748d126b68a7a0d9c41064d59d897ac9
+    size: 129904
     uri: random_forest/model
   preprocess/data.pkl:
     hash: a773d9b05f9e61e7a6cc197cded2642f
