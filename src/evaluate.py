@@ -10,6 +10,7 @@ from sklearn import tree
 from dvclive import Live
 from matplotlib import pyplot as plt
 
+from mlem.api import apply
 
 def evaluate(model, matrix, split, live, save_path):
     """
@@ -25,7 +26,9 @@ def evaluate(model, matrix, split, live, save_path):
     labels = matrix[:, 1].toarray().astype(int)
     x = matrix[:, 2:]
 
-    predictions_by_class = model.predict_proba(x)
+    # predictions_by_class = model.predict_proba(x) # for pkl model
+
+    predictions_by_class = apply(model, x, method="predict_proba")
     predictions = predictions_by_class[:, 1]
 
     # Use dvclive to log a few simple metrics...
