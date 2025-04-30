@@ -79,7 +79,8 @@ stages:
     outs:
       - data/features
   train:
-    cmd: python3 src/train.py data/features model.pkl
+    # cmd: python3 src/train.py data/features model.pkl
+    cmd: python3 src/train.py data/features models/random_forest
     deps:
       - data/features
       - src/train.py
@@ -88,13 +89,14 @@ stages:
       - train.n_est
       - train.seed
     outs:
-      - model.pkl
+      # - model.pkl
       - models/random_forest
   evaluate:
-    cmd: python3 src/evaluate.py model.pkl data/features
+    # cmd: python3 src/evaluate.py model.pkl data/features # pkl model
+    cmd: python3 src/evaluate.py models/random_forest data/features
     deps:
       - data/features
-      - model.pkl
+      # - model.pkl
       - models/random_forest
       - src/evaluate.py
     outs:
