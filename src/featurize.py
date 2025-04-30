@@ -120,6 +120,14 @@ def main():
         tfidf=tfidf,
     )
 
+    # save vectorizer and transformer (for inference)
+    vectorizer_output = os.path.join(out_path, "vectorizer.pkl")
+    transformer_output = os.path.join(out_path, "tfidf_transformer.pkl")
+    with open(vectorizer_output, "wb") as f:
+        pickle.dump(bag_of_words, f)
+    with open(transformer_output, "wb") as f:
+        pickle.dump(tfidf, f)
+
     generate_and_save_test_features(
         test_input=test_input,
         test_output=test_output,
