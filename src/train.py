@@ -6,6 +6,7 @@ import numpy as np
 import yaml
 from sklearn.ensemble import RandomForestClassifier
 
+from mlem.api import save
 
 def train(seed, n_est, min_split, matrix):
     """
@@ -59,6 +60,13 @@ def main():
     # Save the model
     with open(output, "wb") as fd:
         pickle.dump(clf, fd)
+
+    # mlem save
+    save(
+        clf,
+        "random_forest",
+        sample_data=matrix[:, 2:],
+    )
 
 
 if __name__ == "__main__":
