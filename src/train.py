@@ -6,8 +6,10 @@ import numpy as np
 import yaml
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import FunctionTransformer
 
 from mlem.api import save
+from utils import to_numpy
 
 def train(seed, n_est, min_split, matrix):
     """
@@ -105,7 +107,7 @@ def main():
     save(
         pipeline,
         output,
-        preprocess=preprocess,
+        preprocess=to_numpy,
         sample_data=["Your AWS cloud cost optimizer is lying to you - Alexander the Great circa 320 BC."]
     )
 
