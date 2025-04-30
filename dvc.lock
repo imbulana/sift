@@ -96,13 +96,13 @@ stages:
     params:
       params.yaml:
         train.min_split: 0.01
-        train.n_est: 10
+        train.n_est: 5
         train.seed: 42
     outs:
     - path: models/random_forest
       hash: md5
-      md5: fb7f685b53e54ca7b6237706022d7187.dir
-      size: 259765
+      md5: e57cf6c59868f3336221cfe25010b86e.dir
+      size: 129937
       nfiles: 2
   evaluate:
     cmd: python3 src/evaluate.py models/random_forest/model data/features
@@ -114,8 +114,8 @@ stages:
       nfiles: 4
     - path: models/random_forest
       hash: md5
-      md5: fb7f685b53e54ca7b6237706022d7187.dir
-      size: 259765
+      md5: e57cf6c59868f3336221cfe25010b86e.dir
+      size: 129937
       nfiles: 2
     - path: src/evaluate.py
       hash: md5
@@ -124,8 +124,8 @@ stages:
     outs:
     - path: eval
       hash: md5
-      md5: cc5efc8b7431fea194de00f121e03411.dir
-      size: 5900690
+      md5: 36017aa64a9bfaa2d5f604506502bd9e.dir
+      size: 5148378
       nfiles: 8
   redact:
     cmd: python3 src/prepare/redact.py data/cleaned
