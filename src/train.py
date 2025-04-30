@@ -58,13 +58,13 @@ def main():
     clf = train(seed=seed, n_est=n_est, min_split=min_split, matrix=matrix)
 
     # Save the model
-    with open(output, "wb") as fd:
-        pickle.dump(clf, fd)
+    # with open(output, "wb") as fd:
+    #     pickle.dump(clf, fd)
 
     # mlem save
     save(
         clf,
-        "random_forest",
+        output,
         sample_data=matrix[:, 2:],
     )
 
