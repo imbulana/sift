@@ -1,5 +1,6 @@
+__pycache__
 *.ipynb
 /model.pkl
 /credentials
 /eval
-/build
+/build/model
