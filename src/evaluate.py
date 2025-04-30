@@ -95,6 +95,7 @@ def main():
     # Load model and data.
     with open(model_file, "rb") as fd:
         model = pickle.load(fd)
+        model = model['clf'] # get the randdom forest model from the pipeline
 
     with open(train_file, "rb") as fd:
         train, feature_names = pickle.load(fd)
