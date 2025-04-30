@@ -4,6 +4,7 @@ import sys
 
 import numpy as np
 import yaml
+from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 
 from mlem.api import save
@@ -37,6 +38,32 @@ def train(seed, n_est, min_split, matrix):
     return clf
 
 
+def preprocess(text_batch):
+    """
+    Preprocess the text.
+
+    Args:
+        text (str): Input text.
+
+    Returns:
+        str: Preprocessed text.
+    """
+    return np.array([text.lower().strip() for text in text_batch])
+
+
+def get_labels(predictions):
+    """
+    Get the label from the predictions.
+
+    Args:
+        predictions (numpy.ndarray): Predictions array.
+
+    Returns:
+        numpy.ndarray: Labels array.
+    """
+    return map(lambda x: "REAL" if x == 1 else "FAKE", predictions)
+
+
 def main():
     params = yaml.safe_load(open("params.yaml"))["train"]
 
@@ -58,14 +85,28 @@ def main():
     clf = train(seed=seed, n_est=n_est, min_split=min_split, matrix=matrix)
 
     # Save the model
-    # with open(output, "wb") as fd:
+    # with open('model.pkl', "wb") as fd:
     #     pickle.dump(clf, fd)
+
+    vectorizer_path = os.path.join(input, "vectorizer.pkl")
+    transformer_path = os.path.join(input, "tfidf_transformer.pkl")
+    with open(vectorizer_path, "rb") as f:
+        vectorizer = pickle.load(f)
+    with open(transformer_path, "rb") as f:
+        transformer = pickle.load(f)
+
+    pipeline = Pipeline([
+        ("vectorizer", vectorizer),
+        ("tfidf", transformer),
+        ("clf", clf),
+    ])
 
     # mlem save
     save(
-        clf,
+        pipeline,
         output,
-        sample_data=matrix[:, 2:],
+        preprocess=preprocess,
+        sample_data=["Your AWS cloud cost optimizer is lying to you - Alexander the Great circa 320 BC."]
     )
 
 
