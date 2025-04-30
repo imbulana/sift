@@ -93,7 +93,7 @@ stages:
       - models/random_forest
   evaluate:
     # cmd: python3 src/evaluate.py model.pkl data/features # pkl model
-    cmd: python3 src/evaluate.py models/random_forest data/features
+    cmd: python3 src/evaluate.py models/random_forest/model data/features
     deps:
       - data/features
       # - model.pkl
