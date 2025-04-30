@@ -36,7 +36,7 @@ cd ../..
 
 Set up your own remote storage follow the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
 
-## Usage
+## Experiments
 
 ### Reproduce Current Workspace
 
@@ -52,11 +52,11 @@ To create a new experiment, modify the hyperparameters in [`params.yaml`](params
 dvc exp run
 ``` 
 
-To easily compare experiments, install the [DVC](https://marketplace.visualstudio.com/items?itemName=Iterative.dvc) extension on vscode.
+To easily compare experiments, install the [DVC](https://marketplace.visualstudio.com/items?itemName=Iterative.dvc) extension on VSCode.
 
 ### Experiment Queue / Parallel Runs
 
-To run a series of experiments with different hyperparamters, add them to an experiment queue
+To run a series of experiments with different hyperparamters in [`params.yaml`](params.yaml), add them to an experiment queue
 
 ```bash
 dvc exp run -S 'featurize.max_features=5,10' -S 'featurize.ngrams=1,2,3' --queue
@@ -82,9 +82,11 @@ dvc exp run -S 'featurize.max_features=5,10' -S 'featurize.ngrams=1,2,3' --queue
 
 ### Local
 
-Build a docker image with
+Build a docker image
 
 ```bash
+rm -rf bulid # remove existing build (if any)
+
 mlem build docker_dir --model models/random_forest --server fastapi --target build
 docker build build -t mlem-model:latest
 ```
@@ -95,9 +97,31 @@ Then run the docker container to serve the model with FastAPI
 docker run -p 8080:8080 mlem-model:latest
 ```
 
-You can open http://localhost:8080/docs in your browser to see OpenAPI spec.
+Navigate to http://localhost:8080/docs to see the OpenAPI spec.
 
 See [here](https://mlem.ai/doc/user-guide/building/docker) more instructions and other build and serve options.
 
 ### k8s (todo)
 
+
+### Model Registry
+
+Models are versioned within this repository using git tags. However the model files are stored in the remote DVC repository.
+
+First store the repo url to a shell variable
+
+```bash
+export REPO=https://github.com/imbulana/sift
+```
+
+To see registered models, run
+
+```bash
+gto show
+```
+
+To register a new model, run
+
+```bash
+gto register <path_to_model> --repo $REPO
+```
