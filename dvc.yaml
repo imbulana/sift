@@ -89,11 +89,13 @@ stages:
       - train.seed
     outs:
       - model.pkl
+      - models/random_forest
   evaluate:
     cmd: python3 src/evaluate.py model.pkl data/features
     deps:
       - data/features
       - model.pkl
+      - models/random_forest
       - src/evaluate.py
     outs:
       - eval
