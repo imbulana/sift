@@ -20,6 +20,8 @@ python3 -m pip install -r requirements.txt
 
 ## Dataset
 
+The dataset, intermediate steps, and experiment results are tracked in a DVC remote storage on Google Drive.
+
 Download the dataset. See [here](data/README.md) for more information about the dataset.
 
 ```bash
@@ -32,11 +34,11 @@ mv True.csv real.csv && mv Fake.csv fake.csv
 cd ../..
 ```
 
-The dataset, intermediate steps, and experiment results are tracked in a DVC remote storage on Google Drive.
-
-To set up your own remote storage follow the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
+Set up your own remote storage follow the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
 
 ## Usage
+
+### Reproduce Current Workspace
 
 To reproduce the pipeline [`dvc.yaml`](dvc.yaml) in the current workspace, run
 
@@ -49,4 +51,53 @@ To create a new experiment, modify the hyperparameters in [`params.yaml`](params
 ```bash
 dvc exp run
 ``` 
+
+To easily compare experiments, install the [DVC](https://marketplace.visualstudio.com/items?itemName=Iterative.dvc) extension on vscode.
+
+### Experiment Queue / Parallel Runs
+
+To run a series of experiments with different hyperparamters, add them to an experiment queue
+
+```bash
+dvc exp run -S 'featurize.max_features=5,10' -S 'featurize.ngrams=1,2,3' --queue
+```
+
+Then, run the experiments in parallel locally
+
+```bash
+dvc queue start -j <number of parallel jobs>
+# OR if you want to time the set of experiments
+time dvc exp run --run-all -j <number of parallel jobs>
+```
+
+### Experiments on k8s Cluster (todo)
+
+To run a set of experiments on a k8s cluster, add the experiments to the queue as above
+
+```bash
+dvc exp run -S 'featurize.max_features=5,10' -S 'featurize.ngrams=1,2,3' --queue
+```
+
+## Deployment
+
+### Local
+
+Build a docker image with
+
+```bash
+mlem build docker_dir --model models/random_forest --server fastapi --target build
+docker build build -t mlem-model:latest
+```
+
+Then run the docker container to serve the model with FastAPI
+
+```bash
+docker run -p 8080:8080 mlem-model:latest
+```
+
+You can open http://localhost:8080/docs in your browser to see OpenAPI spec.
+
+See [here](https://mlem.ai/doc/user-guide/building/docker) more instructions and other build and serve options.
+
+### k8s (todo)
 
