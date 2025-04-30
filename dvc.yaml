@@ -4,7 +4,7 @@ artifacts:
     type: dataset
     desc: Preprocessed fake/real news dataset
   text-classification:
-    path: model.pkl
+    path: model/models/random_forest
     desc: Classify whether the given article is real or fake
     type: model
     labels:

@@ -3,10 +3,10 @@ prepare:
   seed: 42
 
 featurize:
-  max_features: 200
+  max_features: 10
   ngrams: 2
 
 train:
   seed: 42
-  n_est: 50
+  n_est: 10
   min_split: 0.01
