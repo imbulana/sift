@@ -1,0 +1,86 @@
+artifacts:
+  model/data:
+    hash: 947b9a3b1711f06a1f4768f9d0f43992
+    size: 259732
+    uri: model/model
+  preprocess/data.pkl:
+    hash: a773d9b05f9e61e7a6cc197cded2642f
+    size: 33
+    uri: model/preprocess
+call_orders:
+  predict:
+  - - preprocess
+    - __call__
+  - - model
+    - predict
+  predict_proba:
+  - - preprocess
+    - __call__
+  - - model
+    - predict_proba
+object_type: model
+processors:
+  model:
+    methods:
+      predict:
+        args:
+        - name: X
+          type_:
+            dtype: str2592
+            shape:
+            - null
+            type: ndarray
+        name: predict
+        returns:
+          dtype: float64
+          shape:
+          - null
+          type: ndarray
+        varkw: params
+      predict_proba:
+        args:
+        - name: X
+          type_:
+            dtype: str2592
+            shape:
+            - null
+            type: ndarray
+        name: predict_proba
+        returns:
+          dtype: float64
+          shape:
+          - null
+          - 2
+          type: ndarray
+        varkw: params
+    type: sklearn_pipeline
+  preprocess:
+    io:
+      type: pickle
+    methods:
+      __call__:
+        args:
+        - name: text_batch
+          type_:
+            items:
+            - ptype: str
+              type: primitive
+            type: list
+        name: __call__
+        returns:
+          dtype: str2592
+          shape:
+          - null
+          type: ndarray
+    type: callable
+requirements:
+- module: numpy
+  version: 2.2.4
+- is_package: false
+  module: utils
+  name: utils
+  source64zip: eJxNjzEOwjAMRfecwuqULD1AN8TEhlgRqkrr0kg0iRwX6O0xboF6sWW9/7/txxSJIUxjmqHJEJIxHfbAsdadZXxxfW24HVxlQKooCu37GB4oUh4QfEiTTIKCoiKH5mtK1MylUc2Obnlx+ZTyNjO5Cg4/hxU9IU8UNrRwFRwJE8UWc8Zupbc3kYrkiVJT7VmRe3wiWVeKg0/WQR9pyfYB/u9d3Bv1wVPZ
+  type: custom
+- module: sklearn
+  package_name: scikit-learn
+  version: 1.6.1
