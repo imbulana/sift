@@ -120,16 +120,33 @@ minikube start
 eval $(minikube -p minikube docker-env)
 ```
 
-Build the docker image in minikube and run the container
+Build the docker image in minikube
 
 ```bash
 docker build build -t mlem-model:latest
 ```
 
-Apply the deployment found in `k8s/local/deployment.yaml`
+For isolation, create a k8s [namespace](k8s/local/namespace.yaml) named `sift-app-local`
 
 ```bash
-kubectl create -f k8s/local/deployment.yaml
+kubectl apply -f k8s/local/namespace.yaml
+```
+Then create a new context for the namespace and switch to it
+
+```bash
+kubectl config set-context sift-app-local --namespace sift-app-local --cluster=minikube --user minikube
+kubectl config use-context sift-app-local
+```
+Run the following the to see all contexts and to verify that the current context is `sift-app-local`
+
+```bash
+kubectl config get-contexts
+```
+
+Create the deployment found in [`k8s/local/deployment.yaml`](k8s/local/deployment.yaml)
+
+```bash
+kubectl apply -f k8s/local/deployment.yaml
 ```
 
 Verify that the deployment is successful by running
@@ -137,18 +154,18 @@ Verify that the deployment is successful by running
 ```bash
 kubectl get deployments
 ```
-Then access the app by applying the service in `k8s/local/service.yaml` 
+
+Access the app by creating the service in [`k8s/local/service.yaml`](k8s/local/service.yaml)
 
 ```bash
 kubectl apply -f k8s/local/service.yaml
-minikube service sift-app-service --url
+minikube service sift-app-service -n sift-app-local --url
 ```
 
-Delete all the resources with
+When done, clean up all resources by deleting the namespace
 
 ```bash
-kubectl delete sift-app
-kubectl delete -f k8s/local/service.yaml
+kubectl delete namespace sift-app-local
 ```
 
 ## Model Registry
