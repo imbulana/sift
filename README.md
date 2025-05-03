@@ -126,7 +126,7 @@ Build the docker image in minikube
 docker build build -t mlem-model:latest
 ```
 
-For isolation, create a k8s [namespace](k8s/local/namespace.yaml) named `sift-app-local`
+For isolation, create a k8s [namespace](k8s/local/namespace.yaml) named `sift-app`
 
 ```bash
 kubectl apply -f k8s/local/namespace.yaml
@@ -134,10 +134,10 @@ kubectl apply -f k8s/local/namespace.yaml
 Then create a new context for the namespace and switch to it
 
 ```bash
-kubectl config set-context sift-app-local --namespace sift-app-local --cluster=minikube --user minikube
-kubectl config use-context sift-app-local
+kubectl config set-context sift-app --namespace sift-app --cluster=minikube --user minikube
+kubectl config use-context sift-app
 ```
-Run the following the to see all contexts and to verify that the current context is `sift-app-local`
+Run the following the to see all contexts and to verify that the current context is `sift-app`
 
 ```bash
 kubectl config get-contexts
@@ -159,13 +159,20 @@ Access the app by creating the service in [`k8s/local/service.yaml`](k8s/local/s
 
 ```bash
 kubectl apply -f k8s/local/service.yaml
-minikube service sift-app-service -n sift-app-local --url
+minikube service sift-app-service -n sift-app --url
 ```
 
-When done, clean up all resources by deleting the namespace
+When done, clean up all resources in the namespace
 
 ```bash
-kubectl delete namespace sift-app-local
+kubectl delete namespace sift-app
+```
+
+To delete the context from the config
+
+```bash
+kubectl config delete-context sift-app-local
+kubectl config use-context minikube # switch to default
 ```
 
 ## Model Registry
