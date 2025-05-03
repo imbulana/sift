@@ -82,7 +82,7 @@ dvc exp run -S 'featurize.max_features=5,10' -S 'featurize.ngrams=1,2,3' --queue
 
 ### Local
 
-Build a docker image
+#### Docker
 
 ```bash
 rm -rf bulid # remove existing build (if any)
@@ -101,8 +101,47 @@ Navigate to http://localhost:8080/docs to see the OpenAPI spec.
 
 See [here](https://mlem.ai/doc/user-guide/building/docker) more instructions and other build and serve options.
 
-### k8s (todo)
+#### Minikube
 
+Install minikube and kubectl following the instructions [here](https://minikube.sigs.k8s.io/docs/start/) and [here](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
+
+Then start a minkube cluser and point the shell to minikube's docker-daemon
+
+```bash
+minikube start
+eval $(minikube -p minikube docker-env)
+```
+
+Build the docker image in minikube and run the container
+
+```bash
+docker build build -t mlem-model:latest
+```
+
+Apply the deployment found in `k8s/local/deployment.yaml`
+
+```bash
+kubectl create -f k8s/local/deployment.yaml
+```
+
+Verify that the deployment is successful by running
+
+```bash
+kubectl get deployments
+```
+Then access the app by applying the service in `k8s/local/service.yaml` 
+
+```bash
+kubectl apply -f k8s/local/service.yaml
+minikube service sift-app-service --url
+```
+
+Delete all the resources with
+
+```bash
+kubectl delete sift-app
+kubectl delete -f k8s/local/service.yaml
+```
 
 ### Model Registry
 
