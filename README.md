@@ -80,9 +80,7 @@ dvc exp run -S 'featurize.max_features=5,10' -S 'featurize.ngrams=1,2,3' --queue
 
 ## Deployment
 
-### Local
-
-#### Docker
+Build a docker image
 
 ```bash
 rm -rf bulid # remove existing build (if any)
@@ -91,7 +89,9 @@ mlem build docker_dir --model models/random_forest --server fastapi --target bui
 docker build build -t mlem-model:latest
 ```
 
-Then run the docker container to serve the model with FastAPI
+### Local w/ Docker
+
+Run the docker container to serve the model with FastAPI
 
 ```bash
 docker run -p 8080:8080 mlem-model:latest
@@ -101,7 +101,7 @@ Navigate to http://localhost:8080/docs to see the OpenAPI spec.
 
 See [here](https://mlem.ai/doc/user-guide/building/docker) more instructions and other build and serve options.
 
-#### Minikube
+### Minikube
 
 Install minikube and kubectl following the instructions [here](https://minikube.sigs.k8s.io/docs/start/) and [here](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
 
@@ -143,7 +143,7 @@ kubectl delete sift-app
 kubectl delete -f k8s/local/service.yaml
 ```
 
-### Model Registry
+## Model Registry
 
 Models are versioned within this repository using git tags. However the model files are stored in the remote DVC repository.
 
