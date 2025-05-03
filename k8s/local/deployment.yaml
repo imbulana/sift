@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sift-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sift-app
+  template:
+    metadata:
+      labels:
+        app: sift-app
+    spec:
+      containers:
+      - name: mlem-model
+        image: mlem-model:latest
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 8080
