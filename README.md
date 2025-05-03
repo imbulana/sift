@@ -20,9 +20,17 @@ python3 -m pip install -r requirements.txt
 
 ## Dataset
 
-The dataset, intermediate steps, and experiment results are tracked in a DVC remote storage on Google Drive.
+The dataset, intermediate steps, models, and experiment results are either stored and tracked in a DVC remote storage on Google Drive.
 
-Download the dataset. See [here](data/README.md) for more information about the dataset.
+If you have access to the remote storage, pull it with
+
+```bash
+dvc pull
+```
+
+Otherwise set up your own remote storage follow the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
+
+Then download the dataset. See [here](data/README.md) for more information about the dataset.
 
 ```bash
 cd data/raw
