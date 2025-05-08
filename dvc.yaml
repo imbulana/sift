@@ -13,80 +13,31 @@ artifacts:
       - news
 stages:
 
-  # sources not redacted
-
-  # clean:
-  #   cmd: python3 src/prepare/clean.py data/raw
-  #   deps:
-  #     - data/raw
-  #     - src/prepare/clean.py
-  #   outs:
-  #     - data/cleaned
-  # collate:
-  #   cmd: python3 src/prepare/collate.py data/cleaned
-  #   deps:
-  #     - data/cleaned
-  #     - src/prepare/collate.py
-  #   params:
-  #     - prepare.seed
-  #   outs:
-  #     - data/collated/data.csv
-
-  # sources redacted
-
-  # clean:
-  #   cmd: python3 src/prepare/clean.py data/raw
-  #   deps:
-  #     - data/raw
-  #     - src/prepare/clean.py
-  #   outs:
-  #     - data/cleaned
-  # redact:
-  #   cmd: python3 src/prepare/redact.py data/cleaned
-  #   deps:
-  #     - data/cleaned
-  #     - src/prepare/redact.py
-  #   outs:
-  #     - data/redacted
-  # collate:
-  #   cmd: python3 src/prepare/collate.py data/redacted
-  #   deps:
-  #     - data/redacted
-  #     - src/prepare/collate.py
-  #   params:
-  #     - prepare.seed
-  #   outs:
-  #     - data/collated/data.csv
-
-  # split:
-  #   cmd: python3 src/prepare/split.py data/collated/data.csv
-  #   deps:
-  #     - data/collated/data.csv
-  #     - src/prepare/split.py
-  #   params:
-  #     - prepare.seed
-  #     - prepare.split
-  #   outs:
-  #     - data/prepared
-
-  # featurize:
-  #   cmd: python3 src/featurize.py data/prepared data/features
-  #   deps:
-  #     - data/prepared
-  #     - src/featurize.py
-  #   params:
-  #     - featurize.max_features
-  #     - featurize.ngrams
-  #   outs:
-  #     - data/features
-
-  prepare:
-    cmd: python3 src/prepare.py data/raw
+  clean:
+    cmd: python3 src/prepare/clean.py data/raw
     deps:
       - data/raw
       - src/prepare.py
     outs:
-      - data/prepared
+      - data/cleaned
+
+  redact:
+    cmd: python3 src/prepare/redact.py data/cleaned
+    deps:
+      - data/cleaned
+      - src/prepare/redact.py
+    outs:
+      - data/redacted
+
+  collate:
+    cmd: python3 src/prepare/collate.py data/redacted
+    deps:
+      - data/redacted
+      - src/prepare/collate.py
+    params:
+      - prepare.seed
+    outs:
+      - data/collated/data.csv
 
   split:
     cmd: python3 src/split.py data/prepared
@@ -97,7 +48,7 @@ stages:
       - prepare.seed
       - prepare.split
     outs:
-      - data/split
+      - data/prepared
 
   featurize:
     cmd: python3 src/featurize.py data/split data/features
@@ -109,6 +60,7 @@ stages:
       - featurize.ngrams
     outs:
       - data/features
+
 
   train:
     # cmd: python3 src/train.py data/features model.pkl
@@ -123,6 +75,7 @@ stages:
     outs:
       # - model.pkl
       - models/random_forest
+
   evaluate:
     # cmd: python3 src/evaluate.py model.pkl data/features # pkl model
     cmd: python3 src/evaluate.py models/random_forest/model data/features
@@ -133,8 +86,10 @@ stages:
       - src/evaluate.py
     outs:
       - eval
+
 metrics:
   - eval/metrics.json
+
 plots:
   - ROC:
       template: simple
