@@ -1,12 +1,13 @@
 prepare:
-  split: 0.20
+  parallels: 5
+  split: 0.70
   seed: 42
 
 featurize:
-  max_features: 10
-  ngrams: 2
+  max_features: 4
+  ngrams: 1
 
 train:
   seed: 42
-  n_est: 10
+  n_est: 4
   min_split: 0.01
