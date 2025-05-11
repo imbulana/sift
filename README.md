@@ -28,7 +28,7 @@ If you have access to the remote storage, pull it with
 dvc pull
 ```
 
-Otherwise set up your own remote storage follow the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
+Otherwise set up your own remote storage following the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
 
 Then download the dataset. See [here](data/README.md) for more information about the dataset.
 
@@ -41,8 +41,6 @@ unzip data.zip && rm data.zip
 mv True.csv real.csv && mv Fake.csv fake.csv
 cd ../..
 ```
-
-Set up your own remote storage follow the instructions [here](https://dvc.org/doc/user-guide/data-management/remote-storage).
 
 ## Experiments
 
