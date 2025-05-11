@@ -10,7 +10,7 @@ scipy
 matplotlib
 
 # deployment
-mlem[kubernetes]
+mlem[docker]
 fastapi
 uvicorn
 
