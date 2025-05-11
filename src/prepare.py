@@ -1,7 +1,13 @@
 import os
+import io
 import sys
+from datetime import datetime as dt
+
 import yaml
 import pandas as pd
+import boto3
+from botocore.exceptions import ClientError
+from boto3.s3.transfer import S3UploadFailedError
 
 SOURCES = [
     '21st century wire', 'reason.com', 'hammond news', 'alternate current radio', '21wire', '21wire.tv',
@@ -23,7 +29,7 @@ SOURCES = [
     'the lid', 'ws', 'stars and stripes', '2nd amendment files', 'israel files', 'hammond ranch',
 ]
 
-def prepare(data_path, data_share_dist, data_share_pick, seed):
+def prepare(data_path, access_key_id, secret_access_key, data_share_dist, data_share_pick, seed):
     """
     Prepare data sets for training
 
@@ -33,7 +39,20 @@ def prepare(data_path, data_share_dist, data_share_pick, seed):
         data_share_pick   : Subset of data set to be prepared in a single execution
     """
 
-    def _collate(data_path, data_share_size, data_share_pick, seed):
+    def _fetch_data(s3_bucket, download_path):
+        try:
+            raw_data_paths = []
+            for obj in s3_bucket.objects.all():
+                if 'raw-data' in obj.key:
+                    raw_data_paths.append(obj.key)
+            for path in raw_data_paths:
+                filename = path.split('/')[-1]
+                s3_bucket.download_file(path, f'{download_path}/{filename}')
+        except ClientError as err:
+            print('Something went wrong when fetching or downloading files from S3 bucket..')
+            print(f"\t{err.response['Error']['Code']}:{err.response['Error']['Message']}")
+
+    def _collate(data_path, data_share_dist, data_share_pick, seed):
         path_real = os.path.join(data_path, 'real.csv')
         path_fake = os.path.join(data_path, 'fake.csv')
 
@@ -108,6 +127,36 @@ def prepare(data_path, data_share_dist, data_share_pick, seed):
 
         return redated.replace(source, '')
     
+    def _upload_data(prepared_df, s3_bucket):
+        # Make csv file
+        filename = f'data_{data_share_dist}_{data_share_pick}.csv'
+        os.makedirs(os.path.join('data', 'prepared'), exist_ok=True)
+        prepared_out = os.path.join('data', 'prepared', filename)
+        prepared_df.to_csv(prepared_out, index=False)
+
+        subdirectory = f'prepared-data/{dt.now().strftime("%Y-%m-%d")}'
+        obj = s3_bucket.Object(f'{subdirectory}/{filename}')
+
+        # Write a file to s3 bucket
+        try:
+            obj.upload_file(prepared_out)
+        except S3UploadFailedError as err:
+            print(f"Couldn't upload file {prepared_out} to {bucket.name}.")
+            print(f"\t{err}")
+    
+    # Set up S3 bucket
+    session = boto3.Session(
+        aws_access_key_id=access_key_id,
+        aws_secret_access_key=secret_access_key
+    )
+    s3_resource = session.resource("s3")
+    bucket_name = "msml605-project-sift-bucket"
+    bucket = s3_resource.Bucket(bucket_name)
+
+    # Download raw data from S3 bucket
+    _fetch_data(bucket, data_path)
+
+    # Start cleaning data
     collated_df = _collate(data_path, data_share_dist, data_share_pick, seed)
     cleaned_df = _clean(collated_df)
 
@@ -120,28 +169,30 @@ def prepare(data_path, data_share_dist, data_share_pick, seed):
     # Remove unnecessary columns
     prepared_df = cleaned_df[['id', 'label', 'text']]
 
-    os.makedirs(os.path.join('data', 'prepared'), exist_ok=True)
-    prepared_out = os.path.join('data', 'prepared', f'data_{data_share_dist}_{data_share_pick}.csv')
-    prepared_df.to_csv(prepared_out, index=False)
+    # Upload prepared data to S3 bucket
+    _upload_data(prepared_df, bucket)
 
 
 def main():
-    if len(sys.argv) != 2 and len(sys.argv) != 4:
+    if len(sys.argv) != 4 and len(sys.argv) != 6:
         sys.stderr.write('Arguments error.\n')
-        sys.stderr.write('Usage: python src/prepare/prepare.py data-path [data-share-distribution data-share-pick]')
+        sys.stderr.write('Usage: python src/prepare/prepare.py data-path access-key-id secret-access-key [data-share-distribution data-share-pick]')
         sys.exit(1)
 
     params = yaml.safe_load(open('params.yaml'))['prepare']
     seed = params['seed']
 
     data_path = sys.argv[1]
+    access_key_id = sys.argv[2]
+    secret_access_key = sys.argv[3]
+
     data_share_dist = 1.0
     data_share_pick = 1
-    if len(sys.argv) == 4:
-        data_share_dist = float(sys.argv[2])
-        data_share_pick = int(sys.argv[3])
+    if len(sys.argv) == 6:
+        data_share_dist = float(sys.argv[4])
+        data_share_pick = int(sys.argv[5])
 
-    prepare(data_path, data_share_dist, data_share_pick, seed)
+    prepare(data_path, access_key_id, secret_access_key, data_share_dist, data_share_pick, seed)
 
 if __name__ == '__main__':
     main()
