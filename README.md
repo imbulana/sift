@@ -1,5 +1,7 @@
 ## SIFT: Semantically dIscerning Fact from Tale
 
+<img src="assets/banner.png" width="800px"></img>
+
 ## Setup
 
 Create a conda environment with python 3.12
