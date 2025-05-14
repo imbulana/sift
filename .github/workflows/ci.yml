@@ -1,0 +1,34 @@
+name: CI Pipeline
+# dummy commit
+on: 
+  push:
+    branches: [ "main" ]
+
+jobs:
+  run:
+    runs-on: [ubuntu-latest]
+    permissions: 
+      pull-requests: write
+    steps:
+      - uses: iterative/setup-dvc@v1
+        with:
+          version: latest
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Pull and register model
+        run: |
+          dvc pull train
+          cp -r models/random_forest/ build/model
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GDRIVE_CREDENTIALS_DATA : ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+      - name: Login to Dockerhub
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - name: Build the Docker image
+        run: docker build build -t imbulana/mlem:latest
+      - name: Push to Dockerhub
+        run: docker push imbulana/mlem:latest

@@ -1,17 +1,53 @@
 name: CML Report
 on: pull_request
+
 jobs:
-  run:
+  deploy-runner:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: iterative/setup-cml@v2
-      - uses: iterative/setup-dvc@v1
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - uses: actions/checkout@v2
+
+      - uses: iterative/setup-cml@v1
+
+      - name: deploy
+        shell: bash
+        env:
+          repo_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cml runner launch \
+          --name hosted-runner \
+          --cloud aws \
+          --cloud-region us-east-1 \
+          --cloud-type=t2.micro \
+          --labels=hosted-runner
+
+  run:
+    needs: deploy-runner
+    # runs-on: [ubuntu-latest]
+    runs-on: [self-hosted, hosted-runner]
+    container: docker://dvcorg/cml
+
+    permissions: 
+      pull-requests: write
+    steps:
+      # - uses: iterative/setup-cml@v2
+      # - uses: iterative/setup-dvc@v1
+      #   with:
+      #     version: latest
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
       # Needed for https://github.com/iterative/example-repos-dev/issues/225
       - name: Installs JSON5
         run: npm install -g json5
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
       - name: Generate metrics report
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -25,7 +61,16 @@ jobs:
             git fetch origin main:main
           fi
 
-          dvc pull eval
+          echo "pulling from DVC remote"
+          dvc pull
+
+          echo "running experiment"
+          dvc exp run
+
+          echo "Experiment finished. Pushing results to DVC remote."
+          dvc push
+
+          echo "Generating plots"
           dvc plots diff $PREVIOUS_REF workspace \
             --show-vega --targets ROC | json5 > vega.json
           vl2svg vega.json roc.svg
